@@ -1,8 +1,10 @@
 package main
 
 import (
+	"crypto/sha256"
 	"fmt"
 	"strconv"
+	"strings"
 )
 
 // Сделал определение 1 конкретной переменной
@@ -12,22 +14,28 @@ func getType(v any) string {
 
 // Вариативное кол-во переменных на вход
 func typeToString(args ...any) string {
-	s := ""
+	var s strings.Builder
 	for _, arg := range args {
 		switch v := arg.(type) {
 		case int:
-			s += strconv.Itoa(v) + " "
+			s.WriteString(strconv.Itoa(v) + " ")
 		case float64:
-			s += strconv.FormatFloat(v, 'f', -1, 64) + " "
+			s.WriteString(strconv.FormatFloat(v, 'f', -1, 64) + " ")
 		case string:
-			s += v + " "
+			s.WriteString(v + " ")
 		case bool:
-			s += strconv.FormatBool(v) + " "
+			s.WriteString(strconv.FormatBool(v) + " ")
 		case complex64:
-			s += fmt.Sprintf("%v", v) + " "
+			s.WriteString(fmt.Sprintf("%v", v) + " ")
 		}
 	}
-	return s
+	return s.String()
+}
+func hashWithSalt(runes []rune, salt string) string {
+	mid := len(runes) / 2
+	salted := string(runes[:mid]) + salt + string(runes[mid:])
+	hash := sha256.Sum256([]byte(salted))
+	return fmt.Sprintf("%x", hash)
 }
 func main() {
 	// 1. Создает несколько переменных различных типов данных:
@@ -55,8 +63,11 @@ func main() {
 	fmt.Println(s)
 
 	// 4. Преобразовать эту строку в срез рун.
-	runeS := []rune(s)
+	runes := []rune(s)
+	fmt.Println(runes)
 
-	fmt.Println(runeS)
-
+	//5. Захэшировать этот срез рун SHA256,
+	//добавив в середину соль "go-2024" и вывести результат.
+	salt := "go-2024"
+	fmt.Println(hashWithSalt(runes, salt))
 }
