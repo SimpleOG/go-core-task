@@ -29,8 +29,7 @@ func (wg *MyWaitGroup) Done() {
 	}
 }
 
-// Блокируем выполнение кода до тех пор
-// пока счетчик не будет 0
+
 func (wg *MyWaitGroup) Wait() {
 	//проверка, что счетчик не 0
 	if atomic.LoadInt64(&wg.count) == 0 {
